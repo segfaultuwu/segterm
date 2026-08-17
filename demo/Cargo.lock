@@ -18,7 +18,7 @@ checksum = "29363c0f37e66e18575fadf7141c56ee7ea04ae5fecbeb25eff303f77af203a9"
 
 [[package]]
 name = "segterm"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "limine",
 ]

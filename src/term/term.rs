@@ -75,14 +75,46 @@ impl<'a> Terminal<'a> {
         }
     }
 
+    pub fn writef(&mut self, args: core::fmt::Arguments) {
+        let _ = core::fmt::Write::write_fmt(self, args);
+    }
+
+    pub fn scroll_up(&mut self) {
+        self.fb.scroll_up(self.cfg.font.height as usize, self.cfg.bg);
+    }
+
+    pub fn scroll_down(&mut self) {
+        self.fb.scroll_down(self.cfg.font.height as usize, self.cfg.bg);
+    }
+
+    pub fn rows(&self) -> usize {
+        self.fb.height.saturating_sub(self.cfg.pad.y * 2) / self.cfg.font.height as usize
+    }
+
+    pub fn cols(&self) -> usize {
+        self.fb.width.saturating_sub(self.cfg.pad.x * 2) / self.cfg.font.width as usize
+    }
+
+    fn newline(&mut self) {
+        self.cfg.cur.x = 0;
+        self.cfg.cur.y += 1;
+        let rows = self.rows();
+        if self.cfg.cur.y >= rows {
+            self.cfg.cur.y = rows.saturating_sub(1);
+            self.scroll_up();
+        }
+    }
+
     fn write_plain(&mut self, text: &str) {
         for byte in text.bytes() {
             if byte == b'\n' {
-                self.cfg.cur.y += 1;
-                self.cfg.cur.x = 0;
+                self.newline();
             } else if byte == b'\r' {
                 self.cfg.cur.x = 0;
             } else {
+                if self.cfg.cur.x >= self.cols() {
+                    self.newline();
+                }
                 self.draw_char(byte);
                 self.cfg.cur.x += 1;
             }
@@ -93,11 +125,13 @@ impl<'a> Terminal<'a> {
         match action {
             Action::Print(byte) => {
                 if byte == b'\n' {
-                    self.cfg.cur.y += 1;
-                    self.cfg.cur.x = 0;
+                    self.newline();
                 } else if byte == b'\r' {
                     self.cfg.cur.x = 0;
                 } else {
+                    if self.cfg.cur.x >= self.cols() {
+                        self.newline();
+                    }
                     self.draw_char(byte);
                     self.cfg.cur.x += 1;
                 }

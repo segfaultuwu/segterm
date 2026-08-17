@@ -1,8 +1,8 @@
 #![no_std]
 #![no_main]
 
+use core::fmt::Write;
 use core::panic::PanicInfo;
-
 use limine::request::FramebufferRequest;
 use segterm::{Terminal, TerminalConfig, fb::Framebuffer};
 
@@ -34,9 +34,10 @@ pub extern "C" fn _start() -> ! {
     terminal.write("\x1b[32msegterm\x1b[0m initialized!\n");
     terminal.write("\x1b[36mHello from the kernel!\x1b[0m\n");
     terminal.write("Framebuffer: OK\n");
-
+    let mut i: u16 = 0;
     loop {
-        core::hint::spin_loop();
+        write!(terminal, "Test {i}\n").unwrap();
+        i += 1;
     }
 }
 
