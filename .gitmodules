@@ -1,0 +1,4 @@
+[submodule "demo/extern/limine"]
+	path = demo/extern/limine
+	url = https://github.com/Limine-Bootloader/Limine.git
+	branch = v11.x-binary
