@@ -1,5 +1,4 @@
-
-use super::Allocator;
+use linked_list_allocator::LockedHeap;
 
 pub const HEAP_SIZE: usize = 16 * 1024 * 1024;
 
@@ -13,12 +12,12 @@ static mut HEAP: Heap = Heap {
 };
 
 #[global_allocator]
-pub static ALLOCATOR: Allocator = Allocator::new();
+pub static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
 pub fn init_heap() {
-    let start = unsafe { core::ptr::addr_of_mut!(HEAP.memory) as *mut u8 as usize };
+    let start = unsafe { core::ptr::addr_of_mut!(HEAP.memory) as *mut u8 };
 
     unsafe {
-        ALLOCATOR.init(start, HEAP_SIZE);
+        ALLOCATOR.lock().init(start, HEAP_SIZE);
     }
 }

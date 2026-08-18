@@ -1,9 +1,10 @@
 [package]
 name = "segterm"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 description = "A minimal terminal environment for Limine-based Rust kernels."
 license = "MIT"
 
 [dependencies]
 limine = "0.6.5"
+linked_list_allocator = "0.10.6"
